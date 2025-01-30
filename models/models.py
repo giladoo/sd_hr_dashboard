@@ -1,7 +1,7 @@
 
 from odoo import models, fields, api
 import json
-from jdatetimext import j_start
+from jdatetimext import j_start, j_date_period
 from datetime import date
 from collections import Counter
 from icecream import ic
@@ -11,11 +11,12 @@ class SdHrDashboardEmployee(models.Model):
 
 
     def get_employees(self):
+        lang = self.env.context.get('lang', 'en_US')
         employees_data = self.search_read([], ['birthday', 'certificate', 'department_id', 'project_name'])
         departments_data = self.env['hr.department'].search_read([], ['name'])
         projects_data = self.env['sd_projects.projects'].search_read([], ['name'])
-        contracts_data = self.env['hr.contract'].search_read([('state', '=', 'open')], ['name', 'date_start', 'date_end'])
-        ic(contracts_data)
+        contracts_data = self.env['hr.contract'].search([('state', '=', 'open')])
+        # ic(contracts_data)
 
         # >>>>>>> AGES
         age_list = list([(self.age_calculation(rec['birthday']) // 10) * 10 for rec in employees_data if rec['birthday']])
@@ -25,8 +26,11 @@ class SdHrDashboardEmployee(models.Model):
         trace1_y = {
             'x': age_decade,
             'y': age_count,
-            'text': [rec if rec > 0  else '' for rec in age_count],
+            'text': [rec if rec > 5  else '' for rec in age_count],
             'type': "bar",
+            'textfont': {
+                'size': 18,
+            }
             # 'name': "MEG",
             # 'xaxis': 'x1',
             # 'width': 0.2,
@@ -80,7 +84,7 @@ class SdHrDashboardEmployee(models.Model):
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
-                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
+                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 60, 'pad': 4},
 
 
                 'xaxis': {
@@ -111,11 +115,15 @@ class SdHrDashboardEmployee(models.Model):
         '''
         department_count = Counter(employees_department_list)
         department_count = list([department_count[rec] for rec in department_ids])
+        max_y = max(department_count)
         trace1_y = {
             'x': department_names,
             'y': department_count,
-            'text': [rec if rec > 0 else '' for rec in department_count],
+            'text': [rec if rec > max_y * .15 else '' for rec in department_count],
             'type': "bar",
+            'textfont': {
+                'size': 18,
+            }
             # 'name': "MEG",
             # 'xaxis': 'x1',
             # 'width': 0.2,
@@ -193,10 +201,11 @@ class SdHrDashboardEmployee(models.Model):
         project_names = list([rec['name'] for rec in projects_data if rec['name']])
         project_ids = list([rec['id'] for rec in projects_data])
         employees_project_list = list([rec['project_name'][0] for rec in employees_data if rec['project_name']])
+        # contracts_data
+        months_list = j_date_period('month',6,fields.date.today(), lang)
 
-        today = j_start('month')
 
-        ic(today)
+        ic(months_list)
         # '''
         # ic| project_list: [(5, 'مدیریت / IT'),
         #               (13, 'مدیریت / فنی و مهندسی'),

@@ -5,7 +5,7 @@ import { loadJS } from "@web/core/assets";
 
 export class ChartBox extends Component {
     static template = "chart_box_template";
-    static props = { name: String, class: String, onClick: Function, config: Object };
+    static props = { name: String, description: String, class: String, onClick: Function, config: Object, };
 
     setup(){
         this.chartRef = useRef("chart")

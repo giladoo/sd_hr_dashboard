@@ -16,7 +16,7 @@
             <div class="row  mx-0">
                 <t t-foreach="state.charts" t-as="key" t-key="key" >
                     <t t-set="chart" t-value="state.charts[key]"/>
-                    <ChartBox class="chart.class" name="chart.name" config="chart.config" onClick="text.onTextClick"/>
+                    <ChartBox class="chart.class" name="chart.name" description="chart.description" config="chart.config" onClick="text.onTextClick"/>
                 </t>
 
             </div>
