@@ -12,10 +12,11 @@
             </t>
         </div>
         <div >
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 mx-0">
+<!--            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 mx-0">-->
+            <div class="row  mx-0">
                 <t t-foreach="state.charts" t-as="key" t-key="key" >
                     <t t-set="chart" t-value="state.charts[key]"/>
-                    <ChartBox class="'chart_box_4001'" name="chart.name" config="chart.config" onClick="text.onTextClick"/>
+                    <ChartBox class="chart.class" name="chart.name" config="chart.config" onClick="text.onTextClick"/>
                 </t>
 
             </div>

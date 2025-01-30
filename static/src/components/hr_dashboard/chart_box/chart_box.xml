@@ -2,13 +2,12 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="chart_box_template">
-        <div class="col">
-<!--            <div t-att-class="'text-center border rounded shadow m-2 p-1 ' + props.class">-->
-            <div t-att-class="'bg-white mb-4 text-center rounded shadow m-1 p-1 ' + (props.onClick ? 'cursor-pointer ' : ' ') + props.class"
+        <div t-att-class="'col p-2  '  + props.class">
+            <div t-att-class="'bg-white mb-4 text-center rounded shadow m-1 border   ' + (props.onClick ? 'cursor-pointer ' : ' ')"
                  t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
-                <div class="h2 bg-warning-light" t-esc="props.name"></div>
-                <div class="p-1" >
-                    <div  t-ref="chart" />
+                <div class="h2 bg-warning-light border rounded-top " t-esc="props.name"></div>
+                <div class="m-2 px-0 border1 border-danger1" style="overflow:hidden;" >
+                    <div class=""  t-ref="chart" />
 
             </div>
             </div>

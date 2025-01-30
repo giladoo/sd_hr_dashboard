@@ -28,10 +28,11 @@ export class SdHrDashboard extends Component {
                timeOff: {id: 5, name: _t('Time Off'), icon: 'fa fa-plane', value: '33', class: 'text_class_100', onTextClick: this.onTextClick},
             },
             charts: {
-                age: {name: _t('Age'), config: {data:[]}},
-                certificates: {name: _t('Certificates'), config: {data:[]}},
-                departments: {name: _t('Departments'), config: {data:[]}},
-                projects: {name: _t('projects'), config: {data:[]}},
+                age: {name: _t('Age'), config: {data:[]}, class: 'col-3'},
+                certificates: {name: _t('Certificates'), config: {data:[]}, class: 'col-3'},
+                departments: {name: _t('Departments'), config: {data:[]}, class: 'col-6'},
+                projects: {name: _t('projects'), config: {data:[]}, class: 'col-4'},
+                projects_hr_cost: {name: _t('projects_hr_cost'), config: {data:[]}, class: 'col-4'},
 //                productivity_rate: {name: _t('Employee productivity rate'), config: '', onTextClick: this.onTextClick},
 //                absence_rate: {name: _t('Absence rate'), config: ''},
 //                absence_cost: {name: _t('Absence cost'), config: ''},
@@ -72,6 +73,7 @@ export class SdHrDashboard extends Component {
         this.state.charts['certificates'].config = getEmployee.certificates
         this.state.charts['departments'].config = getEmployee.departments
         this.state.charts['projects'].config = getEmployee.projects
+        this.state.charts['projects_hr_cost'].config = getEmployee.projects_hr_cost
 
         this.state.texts['total'].value = hr_data.length || 0
         this.state.texts['male'].value = hr_data.filter(v => v['gender'] == 'male').length || 0
