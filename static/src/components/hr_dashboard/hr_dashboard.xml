@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="hr_dashboard">
+        <div class="h3 text-center border rounded shadow m-3 p-1">
+            HR Dashboard
+        </div>
+        <div class="row row-cols-lg-6 mx-0 mt-1 mb-3">
+            <t t-foreach="state.texts" t-as="key" t-key="key" >
+                <t t-set="text" t-value="state.texts[key]"/>
+                <TextBox key="key" id="text.id" class="text.class" name="text.name" value="text.value" icon="text.icon" onClick="text.onTextClick"/>
+            </t>
+        </div>
+        <div >
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 mx-0">
+                <t t-foreach="state.charts" t-as="key" t-key="key" >
+                    <t t-set="chart" t-value="state.charts[key]"/>
+                    <ChartBox class="'chart_box_4001'" name="chart.name" config="chart.config" onClick="text.onTextClick"/>
+                </t>
+
+            </div>
+
+        </div>
+    </t>
+
+</templates>

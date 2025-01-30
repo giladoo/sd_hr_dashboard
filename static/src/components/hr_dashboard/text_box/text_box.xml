@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="text_box_template">
+        <div class="col">
+            <div t-att-class="'row text-center border rounded shadow m-2 p-1 ' + (props.onClick ? 'cursor-pointer ' : ' ') + props.class"
+                 t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
+                <div class="col-4 align-content-around" t-att-style="'font-size: 3rem;'">
+                    <i t-att-class="props.icon"></i>
+                </div>
+                <div class="col-8 align-content-around ">
+                    <div class="h1">
+                        <t t-esc="props.value"/>
+                    </div>
+                    <div class="h5 ">
+                        <t t-esc="props.name"/>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</templates>

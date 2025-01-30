@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="chart_box_template">
+        <div class="col">
+<!--            <div t-att-class="'text-center border rounded shadow m-2 p-1 ' + props.class">-->
+            <div t-att-class="'bg-white mb-4 text-center rounded shadow m-1 p-1 ' + (props.onClick ? 'cursor-pointer ' : ' ') + props.class"
+                 t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
+                <div class="h2 bg-warning-light" t-esc="props.name"></div>
+                <div class="p-1" >
+                    <div  t-ref="chart" />
+
+            </div>
+            </div>
+
+        </div>
+    </t>
+
+</templates>
