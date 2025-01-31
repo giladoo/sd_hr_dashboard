@@ -3,9 +3,9 @@
 
     <t t-name="text_box_template">
         <div class="col">
-            <div t-att-class="'row text-center border rounded shadow m-2 p-1 ' + (props.onClick ? 'cursor-pointer ' : ' ') + props.class"
+            <div t-att-class="'row text-center border rounded-3 shadow m-2 ' + ' ' +  (props.onClick ? 'cursor-pointer ' : ' ') + ' ' + props.class"
                  t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
-                <div class="col-4 align-content-around" t-att-style="'font-size: 3rem;'">
+                <div t-att-class="'col-4 px-0 align-content-around rounded-start-3'  + ' ' +  props.classBg" t-att-style="'font-size: 3rem;'">
                     <i t-att-class="props.icon"></i>
                 </div>
                 <div class="col-8 align-content-around ">

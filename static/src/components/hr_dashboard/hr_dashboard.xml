@@ -8,7 +8,7 @@
         <div class="row row-cols-lg-6 mx-0 mt-1 mb-3">
             <t t-foreach="state.texts" t-as="key" t-key="key" >
                 <t t-set="text" t-value="state.texts[key]"/>
-                <TextBox key="key" id="text.id" class="text.class" name="text.name" value="text.value" icon="text.icon" onClick="text.onTextClick"/>
+                <TextBox key="key" id="text.id" class="text.class" classBg="text.classBg" name="text.name" value="text.value" icon="text.icon" onClick="text.onTextClick"/>
             </t>
         </div>
         <div >
@@ -16,7 +16,7 @@
             <div class="row  mx-0">
                 <t t-foreach="state.charts" t-as="key" t-key="key" >
                     <t t-set="chart" t-value="state.charts[key]"/>
-                    <ChartBox key="key" class="chart.class" name="chart.name" description="chart.description" config="chart.config" onClick="text.onTextClick"/>
+                    <ChartBox key="key" class="chart.class" name="chart.name" description="chart.description" config="chart.config" onClick="chart.onClick"/>
                 </t>
 
             </div>

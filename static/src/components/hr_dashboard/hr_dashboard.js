@@ -1,7 +1,7 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry"
-import { Component, useState, useRef, onMounted, onWillStart, onWillUnmount } from '@odoo/owl';
+import { Component, useState, useRef, onMounted, onWillStart, onWillUnmount, useChildSubEnv } from '@odoo/owl';
 import { _t } from "@web/core/l10n/translation";
 import { download } from "@web/core/network/download";
 import { browser } from "@web/core/browser/browser";
@@ -21,17 +21,19 @@ export class SdHrDashboard extends Component {
         this.getData = this.getData.bind(this)
         this.onTextClick = this.onTextClick.bind(this)
         this.onClick = this.onTextClick.bind(this);
+        this.updateChart = this.updateChart.bind(this);
+
         this.state = useState({
             texts: {
-               total: {id: 0, name: _t('Total'), icon: 'fa fa-users', value: '164', class: 'text_class_100', onTextClick: this.onTextClick},
-               male:  {id: 1, name: _t('Male'), icon: 'fa fa-male', value: '80', class: 'text_class_100', onTextClick: this.onTextClick},
-               female: {id: 2, name: _t('Female'), icon: 'fa fa-female', value: '84', class: 'text_class_100', onTextClick: this.onTextClick},
-//               presence: {id: 3, name: _t('Office'), icon: 'fa fa-building text-success', value: '33', class: 'text_class_100', onTextClick: this.onTextClick},
-//               remote: {id: 4, name: _t('Remote'), icon: 'fa fa-home text-success', value: '33', class: 'text_class_100', onTextClick: this.onTextClick},
-//               timeOff: {id: 5, name: _t('Time Off'), icon: 'fa fa-plane', value: '33', class: 'text_class_100', onTextClick: this.onTextClick},
+               total: {id: 0, name: _t('Total'), icon: 'fa fa-users', value: '164', class: 'text_class_100', classBg: 'bg-warning-light', onTextClick: this.onTextClick},
+               male:  {id: 1, name: _t('Male'), icon: 'fa fa-male', value: '80', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
+               female: {id: 2, name: _t('Female'), icon: 'fa fa-female', value: '84', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
+//               presence: {id: 3, name: _t('Office'), icon: 'fa fa-building text-success', value: '33', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
+//               remote: {id: 4, name: _t('Remote'), icon: 'fa fa-home text-success', value: '33', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
+//               timeOff: {id: 5, name: _t('Time Off'), icon: 'fa fa-plane', value: '33', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
             },
             charts: {
-                age: {name: _t('Age'), description: _t('Categorization by Age'), config: {data:[]}, class: 'col-3'},
+                age: {name: _t('Age'), description: _t('Categorization by Age'), config: {data:[]}, class: 'col-3', onClick: () => {}},
                 certificates: {name: _t('Certificates'), description: _t('distribution of various educational degrees'), config: {data:[]}, class: 'col-3'},
                 departments: {name: _t('Departments'), description: _t('Categorization by Departments'), config: {data:[]}, class: 'col-6'},
                 projects: {name: _t('Projects'), description: _t('Categorization by Projects'), config: {data:[]}, class: 'col-4'},
@@ -53,7 +55,8 @@ export class SdHrDashboard extends Component {
         onWillStart(async ()=>{
             await this.getData()
         })
-        onMounted(()=>{
+        onMounted(async ()=>{
+            this.onTextClick('total')
             let oActionManager = document.querySelector('.o_action_manager')
             oActionManager && (oActionManager.style.overflowY = 'auto')
         })
@@ -70,7 +73,7 @@ export class SdHrDashboard extends Component {
         getEmployee = JSON.parse(getEmployee)
 //        readGroup(model, domain, fields, groupby, kwargs = {})
 
-        console.log('getEmployee:', getEmployee)
+//        console.log('getEmployee:', getEmployee)
         this.state.texts['total'].value = hr_data.length || 0
         this.state.texts['male'].value = hr_data.filter(v => v['gender'] == 'male').length || 0
         this.state.texts['female'].value = hr_data.filter(v => v['gender'] == 'female').length || 0
@@ -84,25 +87,55 @@ export class SdHrDashboard extends Component {
         this.state.charts['projects'].config = getEmployee.projects
         this.state.charts['projects_hr_cost'].config = getEmployee.projects_hr_cost
     }
-    async onTextClick(boxId){
+    async onTextClick(boxId, chart=false, pn=0, tn=0){
         const self = this;
-        console.log('onTextClick:', boxId, this)
-        await this.getData(boxId)
-//        if (boxId == 'all'){
-//            this.getData('all')
-//        }else if (boxId == 'male'){
-//            this.getData('male')
-//        }else if (boxId == 'female'){
-//            this.getData('female')
-//        }
-            const chartBoxDivs = document.querySelectorAll('.chart_box_div')
-            for ( const div of chartBoxDivs){
-                  self.updateChart(div, self.state.charts[div.attributes.chartName.value].config)
-            }
+        console.log('onTextClick:', boxId, chart, pn, tn)
+        let updateList = ['total', 'male', 'female', 'init']
+        if(boxId == 'total'){
+            this.state.texts.total.classBg = 'bg-warning-light'
+            this.state.texts.male.classBg = ''
+            this.state.texts.female.classBg = ''
+        } else if(boxId == 'male'){
+            this.state.texts.total.classBg = ''
+            this.state.texts.male.classBg = 'bg-warning-light'
+            this.state.texts.female.classBg = ''
+        } else if(boxId == 'female'){
+            this.state.texts.total.classBg = ''
+            this.state.texts.male.classBg = ''
+            this.state.texts.female.classBg = 'bg-warning-light'
+        }
+        if(updateList.includes(boxId)){
+            await this.getData(boxId)
+                const chartBoxDivs = document.querySelectorAll('.chart_box_div')
+                for ( const div of chartBoxDivs){
+                      self.updateChart(div, self.state.charts[div.attributes.chartName.value].config)
+                }
+        }
     }
     async updateChart(div, config){
+        let self = this;
         return new Promise((resolve) => {
             Plotly.newPlot(div, config);
+            div.on('plotly_click', function(data){
+              console.log('data:', data, self)
+              var pn='',
+                  tn='',
+                  color='',
+                  colors=[];
+              for(var i=0; i < data.points.length; i++){
+                pn = data.points[i].pointNumber;
+                tn = data.points[i].curveNumber;
+//                color = data.points[i].fullData.marker.color;
+              };
+              self.onTextClick(div.attributes.chartName.value, true, pn, tn)
+//              if(this.props.key == 'projects'){
+//
+//              }
+//              console.log('pn:', pn, '\ntn:', tn, '\n', div.attributes.chartName.value)
+//              colors[pn] = '#C54C82'; // #1f77b4 #094a77
+//              var update = {'marker':{color: colors,}};
+//              Plotly.restyle( self.chartRef.el, update, [tn]);
+            });
             resolve();
         });
     }

@@ -153,7 +153,7 @@ class SdHrDashboardEmployee(models.Model):
                 'xaxis': {
                     'type': 'category',
                     'dtick': 1,
-                    'tickangle': 45,
+                    'tickangle': 30,
                     'tickfont': {
                         'size': 15
                     },
@@ -198,7 +198,7 @@ class SdHrDashboardEmployee(models.Model):
                 'xaxis': {
                     'type': 'category',
                     'dtick': 1,
-                    'tickangle': 45,
+                    'tickangle': 30,
                     'tickfont': {
                         'size': 15
                     },
@@ -236,38 +236,26 @@ class SdHrDashboardEmployee(models.Model):
             for rec_list in rec_lists:
                 project_date_cost = 0
                 for rec in rec_list:
-                    project_date_cost += 1
+                    project_date_cost += rec.pr_sum // 10000000
                 project_cost_list.append(project_date_cost)
             project_cost_dict[rec_project] = project_cost_list
 
-        ic(project_cost_dict)
+        # ic(project_cost_dict)
 
-
-        # employee_payable = list([list([contract.id for contract in contracts_data if contract.date_end < rec ]) for rec in months_date_list])
-
-
-        # ic(months_list, months_date_list, employee_payable)
-        # '''
-        # ic| project_list: [(5, 'مدیریت / IT'),
-        #               (13, 'مدیریت / فنی و مهندسی'),
-        #               (2, 'مدیریت'),
-        #
-        # '''
         project_count = Counter(employees_project_list)
         project_count = list([project_count[rec] for rec in project_ids])
-        # cost_list = {
-        #     'znv': [ 350, 350, 350, 350, 350, 350, 350, 350, 350, 350, 350, 350],
-        #     'Yaran': [ 620, 620, 620, 620, 620, 620, 620, 620, 620, 350, 350, 350],
-        # }
-        cost_list = project_cost_dict
+
         data_of_cost = []
-        for p_name, p_const in cost_list.items():
+        for p_name, p_const in project_cost_dict.items():
             data_of_cost.append( {
                 'x': months_list,
                 'y': p_const,
                 'text': p_const,
                 'type': "bar",
                 'name': p_name,
+                'textfont': {
+                    'size': 16,
+                },
                 # 'xaxis': 'x1',
                 # 'width': 0.2,
                 # 'offset': 0.05,
@@ -275,7 +263,6 @@ class SdHrDashboardEmployee(models.Model):
                 })
 
         projects_hr_cost = {
-            'test':[1, 2, 3],
             'data': data_of_cost,
             'layout': {
                 'autosize': True,
@@ -284,7 +271,7 @@ class SdHrDashboardEmployee(models.Model):
                 'xaxis': {
                     'type': 'category',
                     'dtick': 1,
-                    'tickangle': 45,
+                    'tickangle': 30,
                     'tickfont': {
                         'size': 15
                     },
