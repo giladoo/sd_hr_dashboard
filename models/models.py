@@ -10,13 +10,27 @@ class SdHrDashboardEmployee(models.Model):
     _inherit = 'hr.employee'
 
 
-    def get_employees(self):
+    def get_employees(self, emp='all'):
+        ic(emp)
         lang = self.env.context.get('lang', 'en_US')
-        employees_data = self.search_read([], ['birthday', 'certificate', 'department_id', 'project_name'])
+        emp_domain = []
+        cont_domain = [('state', '=', 'open')]
+        if emp == 'all':
+            emp_domain = []
+            cont_domain = [('state', '=', 'open')]
+        elif emp == 'male':
+            emp_domain = [('gender', '=', 'male')]
+            cont_domain = [('state', '=', 'open')]
+        elif emp == 'female':
+            emp_domain = [('gender', '=', 'female')]
+            cont_domain = [('state', '=', 'open')]
+
+        employees_data = self.search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
+        employees_ids = self.search(emp_domain,)
         departments_data = self.env['hr.department'].search_read([], ['name'])
         projects_data = self.env['sd_projects.projects'].search_read([], ['name'])
-        contracts_data = self.env['hr.contract'].search([('state', '=', 'open')])
-        # ic(contracts_data)
+        contracts_data = self.env['hr.contract'].search(cont_domain + [('employee_id', 'in', employees_ids.ids)])
+        # cont_domain = cont_domain + [('employee_id', 'in', employees_ids.ids)]
 
         # >>>>>>> AGES
         age_list = list([(self.age_calculation(rec['birthday']) // 10) * 10 for rec in employees_data if rec['birthday']])
@@ -55,7 +69,7 @@ class SdHrDashboardEmployee(models.Model):
                     # 'tickvals': age_count,
                     # 'tickformat': 'd',
                 }, },
-            'config': {'responsive': True, 'displayModeBar': True}
+            'config': {'responsive': True, 'displayModeBar': False}
         }
 
         # >>>>>>> Certificate
@@ -99,7 +113,7 @@ class SdHrDashboardEmployee(models.Model):
                     # 'tickvals': certificate_count,
                     # 'tickformat': 'd',
                 }, },
-            'config': {'responsive': True, 'displayModeBar': True}
+            'config': {'responsive': True, 'displayModeBar': False}
         }
 
         # >>>>>>> DEPARTMENTS
@@ -148,7 +162,7 @@ class SdHrDashboardEmployee(models.Model):
                     # 'tickvals': department_count,
                     # 'tickformat': 'd',
                 }, },
-            'config': {'responsive': True, 'displayModeBar': True}
+            'config': {'responsive': True, 'displayModeBar': False}
         }
 
 
@@ -193,7 +207,7 @@ class SdHrDashboardEmployee(models.Model):
                     # 'tickvals': project_count,
                     # 'tickformat': 'd',
                 }, },
-            'config': {'responsive': True, 'displayModeBar': True}
+            'config': {'responsive': True, 'displayModeBar': False}
         }
 
 
@@ -202,10 +216,37 @@ class SdHrDashboardEmployee(models.Model):
         project_ids = list([rec['id'] for rec in projects_data])
         employees_project_list = list([rec['project_name'][0] for rec in employees_data if rec['project_name']])
         # contracts_data
-        months_list = j_date_period('month',6,fields.date.today(), lang)
+        months_list = j_date_period('month',12,fields.date.today(), lang)
+        months_date_list = j_date_period('month',12,fields.date.today(), lang, 'date')
+        contracts_date_list = []
+        for rec_date in months_date_list:
+            contracts_date_list.append(list([rec for rec in contracts_data if rec.date_end and rec.date_end >= rec_date.date()]))
+        project_contract_dict = {}
+        for index, rec_project in enumerate(project_ids):
+            rec_project_list = []
+            for rec_contracts in contracts_date_list:
+                rec_project_list.append(list([rec for rec in rec_contracts if rec.project_name and rec.project_name.id == int(rec_project)]))
+            project_contract_dict[project_names[index]] = rec_project_list
+
+        ic(project_contract_dict)
+        project_cost_dict = {}
+        for rec_project, rec_lists in project_contract_dict.items():
+            # ic(rec_project)
+            project_cost_list = []
+            for rec_list in rec_lists:
+                project_date_cost = 0
+                for rec in rec_list:
+                    project_date_cost += 1
+                project_cost_list.append(project_date_cost)
+            project_cost_dict[rec_project] = project_cost_list
+
+        ic(project_cost_dict)
 
 
-        ic(months_list)
+        # employee_payable = list([list([contract.id for contract in contracts_data if contract.date_end < rec ]) for rec in months_date_list])
+
+
+        # ic(months_list, months_date_list, employee_payable)
         # '''
         # ic| project_list: [(5, 'مدیریت / IT'),
         #               (13, 'مدیریت / فنی و مهندسی'),
@@ -214,20 +255,31 @@ class SdHrDashboardEmployee(models.Model):
         # '''
         project_count = Counter(employees_project_list)
         project_count = list([project_count[rec] for rec in project_ids])
-        trace1_y = {
-            'x': project_names,
-            'y': project_count,
-            'type': "bar",
-            # 'name': "MEG",
-            # 'xaxis': 'x1',
-            # 'width': 0.2,
-            # 'offset': 0.05,
-            # 'marker': {'color': 'rgb(30,80,120)'},
-        }
+        # cost_list = {
+        #     'znv': [ 350, 350, 350, 350, 350, 350, 350, 350, 350, 350, 350, 350],
+        #     'Yaran': [ 620, 620, 620, 620, 620, 620, 620, 620, 620, 350, 350, 350],
+        # }
+        cost_list = project_cost_dict
+        data_of_cost = []
+        for p_name, p_const in cost_list.items():
+            data_of_cost.append( {
+                'x': months_list,
+                'y': p_const,
+                'text': p_const,
+                'type': "bar",
+                'name': p_name,
+                # 'xaxis': 'x1',
+                # 'width': 0.2,
+                # 'offset': 0.05,
+                # 'marker': {'color': 'rgb(30,80,120)'},
+                })
+
         projects_hr_cost = {
-            'data': [trace1_y],
+            'test':[1, 2, 3],
+            'data': data_of_cost,
             'layout': {
                 'autosize': True,
+                'barmode': 'stack',
                 'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
                 'xaxis': {
                     'type': 'category',
@@ -241,7 +293,7 @@ class SdHrDashboardEmployee(models.Model):
                     # 'tickvals': project_count,
                     # 'tickformat': 'd',
                 }, },
-            'config': {'responsive': True, 'displayModeBar': True}
+            'config': {'responsive': True, 'displayModeBar': False}
         }
 
 
