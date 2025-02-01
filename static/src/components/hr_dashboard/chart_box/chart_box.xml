@@ -2,10 +2,20 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="chart_box_template">
-        <div t-att-class="'col p-2 avoid-page-break-inside  '  + props.class" style="page-break-inside: avoid;">
+        <div t-att-class="'p-2 avoid-page-break-inside  '  + props.class" style="page-break-inside: avoid;">
             <div t-att-class="'bg-white mb-4 text-center rounded shadow m-1 ' + (props.onClick ? 'cursor-pointer ' : ' ')"
                  t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
-                <div class="h2 pt-2 bg-warning-light  rounded-top-3 " t-esc="props.name"></div>
+                <div class="row mx-0 bg-warning-light  rounded-top-3 ">
+                    <div class="col-1"></div>
+                    <div class="col-10 h2 py-1 " t-esc="props.name"></div>
+                    <div class="col-1 align-content-around p-0 h1-fs" >
+                        <t t-if="props.selected">
+                            <i class="fa fa-check text-danger"></i>
+                        </t>
+                    </div>
+
+                </div>
+
                 <div class="mt-2 blockquote" t-esc="props.description" style="height: 1.2rem;"></div>
                 <div class="m-0 p-3 border1 border-danger1" style="overflow:hidden;" >
 <!--                    <div t-att-class="'chart_box_div ' + props.key"  t-ref="charts" />-->

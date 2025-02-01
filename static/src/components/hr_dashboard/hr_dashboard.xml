@@ -2,21 +2,27 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="hr_dashboard">
-        <div class="h3 text-center border rounded shadow m-3 p-1">
-            HR Dashboard
-        </div>
-        <div class="row row-cols-lg-6 mx-0 mt-1 mb-3">
+        <div class="row mx-0 mt-1 mb-3 ">
+            <div class=" col-12 col-sm-3 col-xl-2 text-center border border-dark rounded-3 shadow my-1 p-1">
+    <!--            <div class="row row-cols-3 mx-0">-->
+    <!--                <div class="col-3 align-content-around text-start px-3" t-esc="state.header.username"></div>-->
+                    <div class=" h1  align-content-around my-1 px-1 text-truncate" t-esc="state.header.title"></div>
+                    <div class=" align-content-around text-end px-3" t-esc="state.header.date"></div>
+    <!--            </div>-->
+            </div>
             <t t-foreach="state.texts" t-as="key" t-key="key" >
                 <t t-set="text" t-value="state.texts[key]"/>
-                <TextBox key="key" id="text.id" class="text.class" classBg="text.classBg" name="text.name" value="text.value" icon="text.icon" onClick="text.onTextClick"/>
+                <TextBox key="key" id="text.id" class="text.class" classBg="text.classBg"
+                         name="text.name" value="text.value" icon="text.icon" onClick="text.onTextClick"/>
             </t>
         </div>
         <div >
 <!--            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 mx-0">-->
-            <div class="row  mx-0">
+            <div class="row  mx-0  justify-content-around">
                 <t t-foreach="state.charts" t-as="key" t-key="key" >
                     <t t-set="chart" t-value="state.charts[key]"/>
-                    <ChartBox key="key" class="chart.class" name="chart.name" description="chart.description" config="chart.config" onClick="chart.onClick"/>
+                    <ChartBox key="key" class="chart.class" name="chart.name" selected="chart.selected"
+                              description="chart.description" config="chart.config" onClick="chart.onClick"/>
                 </t>
 
             </div>

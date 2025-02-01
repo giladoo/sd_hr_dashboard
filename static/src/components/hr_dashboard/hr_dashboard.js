@@ -8,10 +8,13 @@ import { browser } from "@web/core/browser/browser";
 import { useService } from "@web/core/utils/hooks";
 import { session } from "@web/session";
 const { DateTime } = luxon;
-import { formatDate } from "@web/core/l10n/dates";
+import { formatDate, formatDateTime } from "@web/core/l10n/dates";
 import { ChartBox} from "./chart_box/chart_box"
 import { TextBox} from "./text_box/text_box"
 
+const COL_3 = ' col-12 col-md-6 col-lg-3 '
+const COL_4 = ' col-12 col-md-6 col-lg-4 '
+const COL_6 = ' col-12 col-lg-6 '
 
 export class SdHrDashboard extends Component {
     static template = "hr_dashboard";
@@ -24,6 +27,7 @@ export class SdHrDashboard extends Component {
         this.updateChart = this.updateChart.bind(this);
 
         this.state = useState({
+            header: {username: session.name, title: _t('HR Dashboard'), date: formatDate(DateTime.now())},
             domain: [{total: [0,0]}],
             texts: {
                total: {id: 0, name: _t('Total'), icon: 'fa fa-users', value: '164', class: 'text_class_100', classBg: 'bg-warning-light', onTextClick: this.onTextClick},
@@ -34,11 +38,11 @@ export class SdHrDashboard extends Component {
 //               timeOff: {id: 5, name: _t('Time Off'), icon: 'fa fa-plane', value: '33', class: 'text_class_100', classBg: '', onTextClick: this.onTextClick},
             },
             charts: {
-                projects: {name: _t('Projects'), description: _t('Categorization by Projects'), config: {data:[]}, class: 'col-3'},
-                departments: {name: _t('Departments'), description: _t('Categorization by Departments'), config: {data:[]}, class: 'col-6'},
-                age: {name: _t('Age'), description: _t('Categorization by Age'), config: {data:[]}, class: 'col-3', onClick: () => {}},
-                certificates: {name: _t('Certificates'), description: _t('distribution of various educational degrees'), config: {data:[]}, class: 'col-3'},
-                projects_hr_cost: {name: _t('Projects HR Cost'), description: _t('Projects HR cost forcast (Milion Toman)'), config: {data:[]}, class: 'col-6'},
+                projects: {name: _t('Projects'), description: _t('Categorization by Projects'), config: {data:[]}, class: COL_3, },
+                departments: {name: _t('Departments'), description: _t('Categorization by Departments'), config: {data:[]}, class: COL_6},
+                age: {name: _t('Age'), description: _t('Categorization by Age'), config: {data:[]}, class: COL_3, onClick: () => {}},
+                certificates: {name: _t('Certificates'), description: _t('distribution of various educational degrees'), config: {data:[]}, class: COL_3},
+                projects_hr_cost: {name: _t('Projects HR Cost'), description: _t('Projects HR cost forcast (Milion Toman)'), config: {data:[]}, class: COL_6},
 //                productivity_rate: {name: _t('Employee productivity rate'), config: '', onTextClick: this.onTextClick},
 //                absence_rate: {name: _t('Absence rate'), config: {data:[]}, class: 'col-4'},
 //                absence_cost: {name: _t('Absence cost'), config: {data:[]}, class: 'col-4'},
@@ -65,7 +69,7 @@ export class SdHrDashboard extends Component {
             let oActionManager = document.querySelector('.o_action_manager')
             oActionManager && (oActionManager.style.overflowY = '')
         })
-        console.log('this:', this)
+        console.log('this:', this, session)
     }
     async getData(state_domain=[{total: ['', 0, 0]}]){
         let hr_data = await this.orm.searchRead('hr.employee', [], ['name', 'gender', 'marital', 'hr_presence_state'])
@@ -93,6 +97,7 @@ export class SdHrDashboard extends Component {
         console.log('onTextClick:', boxId, isChartClick, pn, tn)
 
         let updateList = ['total', 'male', 'female',]
+        let selectedList = ['projects', 'departments',]
 
         if(boxId == 'total'){
             this.state.texts.total.classBg = 'bg-warning-light'
@@ -111,14 +116,17 @@ export class SdHrDashboard extends Component {
             this.state.domain = [{female: ['', 0, 0]}]
         }else{
             if (this.state.domain.filter(r => r[boxId]).length){
-            // remove the existing boxID from domain
-            // [{male: ['', 0, 0]}, {projects: ['', 0, 0]}]
-            this.state.domain = this.state.domain.filter(r => r[boxId] == undefined)
+                this.state.domain = this.state.domain.filter(r => r[boxId] == undefined)
+//                this.state.charts[boxId]['selected'] = false
+                selectedList.includes(boxId) && this.state.charts[boxId] && (this.state.charts[boxId].selected = false )
 
             }else{
                 let domain_object = {}
                 domain_object[boxId] = [x, pn, tn]
                 this.state.domain.push(domain_object)
+                console.log('selected:', this.state.charts[boxId] )
+
+                selectedList.includes(boxId) && this.state.charts[boxId] && (this.state.charts[boxId].selected = true )
             }
         }
         console.log('domain filtered:', this.state.domain.filter(r => r[boxId]).length)
