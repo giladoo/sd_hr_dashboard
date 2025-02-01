@@ -11,6 +11,8 @@ class SdHrDashboardEmployee(models.Model):
 
 
     def get_employees(self, domain_list=[{'total': ['', 0, 0]}]):
+        if not self.env.user.has_group('hr.group_hr_user'):
+            return {}
         ic(domain_list, )
         ic(list([r for r in domain_list if dict(r).get('total', False)]))
         lang = self.env.context.get('lang', 'en_US')
@@ -40,12 +42,16 @@ class SdHrDashboardEmployee(models.Model):
         if len(department_clicked) > 0:
             department_domain = [('name', '=', dict(department_clicked[0]).get('departments')[0])]
 
-        employees_data = self.search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
-        employees_ids = self.search(emp_domain,)
-        departments_data = self.env['hr.department'].search_read(department_domain, ['name'])
-        projects_data = self.env['sd_projects.projects'].search_read(project_domain, ['name'])
-        contracts_data = self.env['hr.contract'].search(cont_domain + [('employee_id', 'in', employees_ids.ids)])
+        employees_data = self.sudo().search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
+        employees_ids = self.sudo().search(emp_domain,)
+        departments_data = self.env['hr.department'].sudo().search_read(department_domain, ['name'])
+        projects_data = self.env['sd_projects.projects'].sudo().search_read(project_domain, ['name'])
+        if self.env.user.has_group('hr_contract.group_hr_contract_employee_manager'):
+            contracts_data = self.env['hr.contract'].sudo().search(cont_domain + [('employee_id', 'in', employees_ids.ids)])
+        else:
+            contracts_data = []
         # cont_domain = cont_domain + [('employee_id', 'in', employees_ids.ids)]
+
 
         # >>>>>>> AGES
         age_list = list([(self.age_calculation(rec['birthday']) // 10) * 10 for rec in employees_data if rec['birthday']])
