@@ -39,8 +39,12 @@ class SdHrDashboardEmployee(models.Model):
             cont_domain += emp_project_domain
 
         department_clicked = list([r for r in domain_list if dict(r).get('departments', False)])
+        ic(department_clicked)
         if len(department_clicked) > 0:
             department_domain = [('name', '=', dict(department_clicked[0]).get('departments')[0])]
+            department_id = self.env['hr.department'].sudo().search(department_domain,)
+
+            emp_domain += [('department_id', 'in', department_id.ids)]
 
         employees_data = self.sudo().search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
         employees_ids = self.sudo().search(emp_domain,)
@@ -58,10 +62,11 @@ class SdHrDashboardEmployee(models.Model):
         age_count = Counter(age_list)
         age_decade = [10, 20, 30, 40, 50, 60, 70, 80, 90]
         age_count = list([age_count[rec] for rec in age_decade])
+        age_count_max = max(age_count)
         trace1_y = {
             'x': age_decade,
             'y': age_count,
-            'text': [rec if rec > 5  else '' for rec in age_count],
+            'text': [rec if rec > age_count_max * .15  else '' for rec in age_count],
             'type': "bar",
             'textfont': {
                 'size': 18,
@@ -89,6 +94,7 @@ class SdHrDashboardEmployee(models.Model):
                 'yaxis': {
                     # 'tickvals': age_count,
                     # 'tickformat': 'd',
+                    'showticklabels': False,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -182,6 +188,7 @@ class SdHrDashboardEmployee(models.Model):
                 'yaxis': {
                     # 'tickvals': department_count,
                     # 'tickformat': 'd',
+                    'showticklabels': False if max_y < 6 else True ,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -204,6 +211,11 @@ class SdHrDashboardEmployee(models.Model):
             'x': project_names,
             'y': project_count,
             'type': "bar",
+            'text': [rec if rec > max(project_count) * .15 else '' for rec in project_count],
+
+            'textfont': {
+                'size': 18,
+            }
             # 'name': "MEG",
             # 'xaxis': 'x1',
             # 'width': 0.2,
@@ -227,6 +239,8 @@ class SdHrDashboardEmployee(models.Model):
                 'yaxis': {
                     # 'tickvals': project_count,
                     # 'tickformat': 'd',
+                    'showticklabels': False if max(project_count) < 6 else True,
+
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }

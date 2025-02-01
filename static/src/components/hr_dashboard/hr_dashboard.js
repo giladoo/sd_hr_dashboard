@@ -110,11 +110,18 @@ export class SdHrDashboard extends Component {
             this.state.texts.female.classBg = 'bg-warning-light'
             this.state.domain = [{female: ['', 0, 0]}]
         }else{
-            let domain_object = {}
-            domain_object[boxId] = [x, pn, tn]
-            this.state.domain.push(domain_object)
-        }
+            if (this.state.domain.filter(r => r[boxId]).length){
+            // remove the existing boxID from domain
+            // [{male: ['', 0, 0]}, {projects: ['', 0, 0]}]
+            this.state.domain = this.state.domain.filter(r => r[boxId] == undefined)
 
+            }else{
+                let domain_object = {}
+                domain_object[boxId] = [x, pn, tn]
+                this.state.domain.push(domain_object)
+            }
+        }
+        console.log('domain filtered:', this.state.domain.filter(r => r[boxId]).length)
         await this.getData(this.state.domain)
 
         const chartBoxDivs = document.querySelectorAll('.chart_box_div')
@@ -137,12 +144,16 @@ export class SdHrDashboard extends Component {
                 x = data.points[i].x;
               };
               self.onTextClick(div.attributes.chartName.value, true, pn, tn, x)
-              console.log('data:', data)
-              console.log(div.attributes.chartName.value, '\npn:', pn, '\ntn:', tn, x )
+//              console.log('state:', self.state.domain)
+//              console.log(div.attributes.chartName.value, '\npn:', pn, '\ntn:', tn, x )
 //              colors[pn] = '#C54C82'; // #1f77b4 #094a77
 //              var update = {'marker':{color: colors,}};
 //              Plotly.restyle( self.chartRef.el, update, [tn]);
             });
+            div.on('plotly_doubleclick', function(data){
+//                console.log('plotly_doubleclick', data)
+            })
+
             resolve();
         });
     }
