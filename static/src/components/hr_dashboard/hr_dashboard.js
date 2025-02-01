@@ -38,7 +38,7 @@ export class SdHrDashboard extends Component {
                 departments: {name: _t('Departments'), description: _t('Categorization by Departments'), config: {data:[]}, class: 'col-6'},
                 age: {name: _t('Age'), description: _t('Categorization by Age'), config: {data:[]}, class: 'col-3', onClick: () => {}},
                 certificates: {name: _t('Certificates'), description: _t('distribution of various educational degrees'), config: {data:[]}, class: 'col-3'},
-                projects_hr_cost: {name: _t('Projects HR Cost'), description: _t('Projects HR cost forcast'), config: {data:[]}, class: 'col-6'},
+                projects_hr_cost: {name: _t('Projects HR Cost'), description: _t('Projects HR cost forcast (Milion Toman)'), config: {data:[]}, class: 'col-6'},
 //                productivity_rate: {name: _t('Employee productivity rate'), config: '', onTextClick: this.onTextClick},
 //                absence_rate: {name: _t('Absence rate'), config: {data:[]}, class: 'col-4'},
 //                absence_cost: {name: _t('Absence cost'), config: {data:[]}, class: 'col-4'},

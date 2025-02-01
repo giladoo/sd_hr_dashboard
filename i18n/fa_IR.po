@@ -1,0 +1,132 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sd_hr_dashboard
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-01 07:19+0000\n"
+"PO-Revision-Date: 2025-02-01 10:53+0330\n"
+"Last-Translator: Arash Homayounfar <homayounfar@msn.com>\n"
+"Language-Team: homayounfar@msn.com\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n==0 || n==1);\n"
+"Language: fa_IR\n"
+"X-Generator: Poedit 2.2\n"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Age"
+msgstr "سن"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Categorization by Age"
+msgstr "دسته بندی بر اساس سن"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Categorization by Departments"
+msgstr "دسته بندی بر اساس واحد سازمانی"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Categorization by Projects"
+msgstr "دسته بندی بر اساس پروژه ها"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Certificates"
+msgstr "مدرک تحصیلی"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Departments"
+msgstr "واحد های سازمانی"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Female"
+msgstr "زن"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.xml:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.xml:0
+#: model:ir.actions.client,name:sd_hr_dashboard.hr_dashboard
+#: model:ir.ui.menu,name:sd_hr_dashboard.hr_dashboard_menu
+#, python-format
+msgid "HR Dashboard"
+msgstr "داشبورد منابع انسانی"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Male"
+msgstr "مرد"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Projects"
+msgstr "پروژه ها"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Projects HR Cost"
+msgstr "هزینه پروژه ها - منابع انسانی"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Projects HR cost forcast (Milion Toman)"
+msgstr "پیشبینی هزینه پروژه ها - منابع انسانی ( میلیون تومان)"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "Total"
+msgstr "مجموع"
+
+#. module: sd_hr_dashboard
+#. odoo-javascript
+#: code:addons/custom/addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#: code:addons/sd_hr_dashboard/static/src/components/hr_dashboard/hr_dashboard.js:0
+#, python-format
+msgid "distribution of various educational degrees"
+msgstr "گوناگونی مدارک تحصیلی"
