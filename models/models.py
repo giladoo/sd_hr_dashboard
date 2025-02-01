@@ -10,25 +10,40 @@ class SdHrDashboardEmployee(models.Model):
     _inherit = 'hr.employee'
 
 
-    def get_employees(self, emp='all'):
-        ic(emp)
+    def get_employees(self, domain_list=[{'total': ['', 0, 0]}]):
+        ic(domain_list, )
+        ic(list([r for r in domain_list if dict(r).get('total', False)]))
         lang = self.env.context.get('lang', 'en_US')
         emp_domain = []
+        project_domain = []
+        emp_project_domain = []
+        department_domain = []
         cont_domain = [('state', '=', 'open')]
-        if emp == 'all':
+        if len(list([r for r in domain_list if dict(r).get('total', False)])) > 0:
             emp_domain = []
             cont_domain = [('state', '=', 'open')]
-        elif emp == 'male':
+        elif len(list([r for r in domain_list if dict(r).get('male', False)])) > 0:
             emp_domain = [('gender', '=', 'male')]
             cont_domain = [('state', '=', 'open')]
-        elif emp == 'female':
+        elif len(list([r for r in domain_list if dict(r).get('female', False)])) > 0:
             emp_domain = [('gender', '=', 'female')]
             cont_domain = [('state', '=', 'open')]
 
+        projects_clicked = list([r for r in domain_list if dict(r).get('projects', False)])
+        if len(projects_clicked) > 0:
+            project_domain = [('name', '=', dict(projects_clicked[0]).get('projects')[0])]
+            emp_project_domain = [('project_name', '=', dict(projects_clicked[0]).get('projects')[0])]
+            emp_domain += emp_project_domain
+            cont_domain += emp_project_domain
+
+        department_clicked = list([r for r in domain_list if dict(r).get('departments', False)])
+        if len(department_clicked) > 0:
+            department_domain = [('name', '=', dict(department_clicked[0]).get('departments')[0])]
+
         employees_data = self.search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
         employees_ids = self.search(emp_domain,)
-        departments_data = self.env['hr.department'].search_read([], ['name'])
-        projects_data = self.env['sd_projects.projects'].search_read([], ['name'])
+        departments_data = self.env['hr.department'].search_read(department_domain, ['name'])
+        projects_data = self.env['sd_projects.projects'].search_read(project_domain, ['name'])
         contracts_data = self.env['hr.contract'].search(cont_domain + [('employee_id', 'in', employees_ids.ids)])
         # cont_domain = cont_domain + [('employee_id', 'in', employees_ids.ids)]
 
@@ -228,7 +243,7 @@ class SdHrDashboardEmployee(models.Model):
                 rec_project_list.append(list([rec for rec in rec_contracts if rec.project_name and rec.project_name.id == int(rec_project)]))
             project_contract_dict[project_names[index]] = rec_project_list
 
-        ic(project_contract_dict)
+        # ic(project_contract_dict)
         project_cost_dict = {}
         for rec_project, rec_lists in project_contract_dict.items():
             # ic(rec_project)
