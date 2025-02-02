@@ -134,11 +134,11 @@ export class SdHrDashboard extends Component {
         for ( const div of chartBoxDivs){
               Plotly.animate(div, self.state.charts[div.attributes.chartName.value].config, {
                 transition: {
-                  duration: 500,
+                  duration: 300,
                   easing: 'cubic-in-out'
                 },
                 frame: {
-                  duration: 500
+                  duration: 300
                 }
               })
         }
