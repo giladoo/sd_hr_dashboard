@@ -6,7 +6,7 @@
             <div t-att-class="'bg-white mb-4 text-center rounded shadow m-1 ' + (props.onClick ? 'cursor-pointer ' : ' ')"
                  t-on-click="props.hasOwnProperty('onClick') &amp;&amp; props.onClick ? ()=>props.onClick( props.key ) : ()=>{}">
                 <div class="row mx-0 bg-warning-light  rounded-top-3 ">
-                    <div class="col-1"></div>
+                    <div class="col-1 p-0"></div>
                     <div class="col-10 h2 py-1 " t-esc="props.name"></div>
                     <div class="col-1 align-content-around p-0 h1-fs" >
                         <t t-if="props.selected">

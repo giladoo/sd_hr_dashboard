@@ -64,6 +64,7 @@ export class SdHrDashboard extends Component {
             this.onTextClick([{total: ['', 0, 0]}])
             let oActionManager = document.querySelector('.o_action_manager')
             oActionManager && (oActionManager.style.overflowY = 'auto')
+            this.setPlotlyEvent()
         })
         onWillUnmount(()=>{
             let oActionManager = document.querySelector('.o_action_manager')
@@ -98,20 +99,22 @@ export class SdHrDashboard extends Component {
 
         let updateList = ['total', 'male', 'female',]
         let selectedList = ['projects', 'departments',]
+        if (updateList.includes(boxId)){
+            for(const select of selectedList ){
+                this.state.charts[select].selected = false
+            }
+            this.state.texts.total.classBg = ''
+            this.state.texts.male.classBg = ''
+            this.state.texts.female.classBg = ''
+        }
 
         if(boxId == 'total'){
             this.state.texts.total.classBg = 'bg-warning-light'
-            this.state.texts.male.classBg = ''
-            this.state.texts.female.classBg = ''
             this.state.domain = [{total: ['', 0, 0]}]
         } else if(boxId == 'male'){
-            this.state.texts.total.classBg = ''
             this.state.texts.male.classBg = 'bg-warning-light'
-            this.state.texts.female.classBg = ''
             this.state.domain = [{male: ['', 0, 0]}]
         } else if(boxId == 'female'){
-            this.state.texts.total.classBg = ''
-            this.state.texts.male.classBg = ''
             this.state.texts.female.classBg = 'bg-warning-light'
             this.state.domain = [{female: ['', 0, 0]}]
         }else{
@@ -134,13 +137,53 @@ export class SdHrDashboard extends Component {
 
         const chartBoxDivs = document.querySelectorAll('.chart_box_div')
         for ( const div of chartBoxDivs){
-              self.updateChart(div, self.state.charts[div.attributes.chartName.value].config)
+//              self.updateChart(div, self.state.charts[div.attributes.chartName.value].config)
+              Plotly.animate(div, self.state.charts[div.attributes.chartName.value].config, {
+                transition: {
+                  duration: 500,
+                  easing: 'cubic-in-out'
+                },
+                frame: {
+                  duration: 500
+                }
+              })
+        }
+    }
+    async setPlotlyEvent(){
+//    it runs once on mounted.
+        let self = this;
+        const chartBoxDivs = document.querySelectorAll('.chart_box_div')
+        for ( const div of chartBoxDivs){
+            div.on('plotly_click', function(data){
+                var pn='',
+                  tn='',
+                  x='',
+                  colors=[];
+                for(var i=0; i < data.points.length; i++){
+                pn = data.points[i].pointNumber;
+                tn = data.points[i].curveNumber;
+                x = data.points[i].x;
+                };
+                self.onTextClick(div.attributes.chartName.value, true, pn, tn, x)
+            });
         }
     }
     async updateChart(div, config){
+    // it is not needed any more
         let self = this;
         return new Promise((resolve) => {
+              Plotly.animate(div, config, {
+                transition: {
+                  duration: 500,
+                  easing: 'cubic-in-out'
+                },
+                frame: {
+                  duration: 500
+                }
+              })
+
             Plotly.newPlot(div, config);
+
             div.on('plotly_click', function(data){
               var pn='',
                   tn='',
@@ -151,13 +194,16 @@ export class SdHrDashboard extends Component {
                 tn = data.points[i].curveNumber;
                 x = data.points[i].x;
               };
+
               self.onTextClick(div.attributes.chartName.value, true, pn, tn, x)
+
 //              console.log('state:', self.state.domain)
 //              console.log(div.attributes.chartName.value, '\npn:', pn, '\ntn:', tn, x )
 //              colors[pn] = '#C54C82'; // #1f77b4 #094a77
 //              var update = {'marker':{color: colors,}};
 //              Plotly.restyle( self.chartRef.el, update, [tn]);
             });
+
             div.on('plotly_doubleclick', function(data){
 //                console.log('plotly_doubleclick', data)
             })
