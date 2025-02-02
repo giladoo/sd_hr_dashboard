@@ -45,8 +45,15 @@ class SdHrDashboardEmployee(models.Model):
         if len(department_clicked) > 0:
             department_domain = [('name', '=', dict(department_clicked[0]).get('departments')[0])]
             department_id = self.env['hr.department'].sudo().search(department_domain,)
-
             emp_domain += [('department_id', 'in', department_id.ids)]
+
+        certificates_clicked = list([r for r in domain_list if dict(r).get('certificates', False)])
+        if len(certificates_clicked) > 0:
+            certificates_clicked_name = dict(certificates_clicked[0]).get('certificates')[0]
+            cert = self._fields['certificate']._description_selection(self.env)
+            cert = list([rec[0] for rec in cert if rec[1] == certificates_clicked_name])[0]
+            ic(cert)
+            emp_domain += [('certificate', '=', cert)]
 
         employees_data = self.sudo().search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
         employees_ids = self.sudo().search(emp_domain,)

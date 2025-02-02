@@ -24,7 +24,6 @@ export class SdHrDashboard extends Component {
         this.getData = this.getData.bind(this)
         this.onTextClick = this.onTextClick.bind(this)
         this.onClick = this.onTextClick.bind(this);
-        this.updateChart = this.updateChart.bind(this);
 
         this.state = useState({
             header: {username: session.name, title: _t('HR Dashboard'), date: formatDate(DateTime.now())},
@@ -98,7 +97,7 @@ export class SdHrDashboard extends Component {
         console.log('onTextClick:', boxId, isChartClick, pn, tn)
 
         let updateList = ['total', 'male', 'female',]
-        let selectedList = ['projects', 'departments',]
+        let selectedList = ['projects', 'departments', 'certificates']
         if (updateList.includes(boxId)){
             for(const select of selectedList ){
                 this.state.charts[select].selected = false
@@ -120,24 +119,19 @@ export class SdHrDashboard extends Component {
         }else{
             if (this.state.domain.filter(r => r[boxId]).length){
                 this.state.domain = this.state.domain.filter(r => r[boxId] == undefined)
-//                this.state.charts[boxId]['selected'] = false
                 selectedList.includes(boxId) && this.state.charts[boxId] && (this.state.charts[boxId].selected = false )
-
             }else{
                 let domain_object = {}
                 domain_object[boxId] = [x, pn, tn]
                 this.state.domain.push(domain_object)
-                console.log('selected:', this.state.charts[boxId] )
-
                 selectedList.includes(boxId) && this.state.charts[boxId] && (this.state.charts[boxId].selected = true )
             }
         }
-        console.log('domain filtered:', this.state.domain.filter(r => r[boxId]).length)
+//        console.log('domain filtered:', this.state.domain.filter(r => r[boxId]).length)
         await this.getData(this.state.domain)
 
         const chartBoxDivs = document.querySelectorAll('.chart_box_div')
         for ( const div of chartBoxDivs){
-//              self.updateChart(div, self.state.charts[div.attributes.chartName.value].config)
               Plotly.animate(div, self.state.charts[div.attributes.chartName.value].config, {
                 transition: {
                   duration: 500,
@@ -157,59 +151,17 @@ export class SdHrDashboard extends Component {
             div.on('plotly_click', function(data){
                 var pn='',
                   tn='',
-                  x='',
+                  label='',
                   colors=[];
                 for(var i=0; i < data.points.length; i++){
                 pn = data.points[i].pointNumber;
                 tn = data.points[i].curveNumber;
-                x = data.points[i].x;
+                label = data.points[i].label;
                 };
-                self.onTextClick(div.attributes.chartName.value, true, pn, tn, x)
+                self.onTextClick(div.attributes.chartName.value, true, pn, tn, label)
+                console.log('clicked:', data )
             });
         }
-    }
-    async updateChart(div, config){
-    // it is not needed any more
-        let self = this;
-        return new Promise((resolve) => {
-              Plotly.animate(div, config, {
-                transition: {
-                  duration: 500,
-                  easing: 'cubic-in-out'
-                },
-                frame: {
-                  duration: 500
-                }
-              })
-
-            Plotly.newPlot(div, config);
-
-            div.on('plotly_click', function(data){
-              var pn='',
-                  tn='',
-                  x='',
-                  colors=[];
-              for(var i=0; i < data.points.length; i++){
-                pn = data.points[i].pointNumber;
-                tn = data.points[i].curveNumber;
-                x = data.points[i].x;
-              };
-
-              self.onTextClick(div.attributes.chartName.value, true, pn, tn, x)
-
-//              console.log('state:', self.state.domain)
-//              console.log(div.attributes.chartName.value, '\npn:', pn, '\ntn:', tn, x )
-//              colors[pn] = '#C54C82'; // #1f77b4 #094a77
-//              var update = {'marker':{color: colors,}};
-//              Plotly.restyle( self.chartRef.el, update, [tn]);
-            });
-
-            div.on('plotly_doubleclick', function(data){
-//                console.log('plotly_doubleclick', data)
-            })
-
-            resolve();
-        });
     }
 }
 
