@@ -132,15 +132,33 @@ export class SdHrDashboard extends Component {
 
         const chartBoxDivs = document.querySelectorAll('.chart_box_div')
         for ( const div of chartBoxDivs){
-              Plotly.animate(div, self.state.charts[div.attributes.chartName.value].config, {
-                transition: {
-                  duration: 300,
-                  easing: 'cubic-in-out'
-                },
-                frame: {
-                  duration: 300
-                }
-              })
+            let config = self.state.charts[div.attributes.chartName.value].config
+            if (config.data[0].type == 'treemap'){
+//                await Plotly.newPlot(div, config)
+//                await Plotly.react(div, config)
+//                self.setOnClickPlot(self, div)
+                  Plotly.animate(div, config, {
+                     redraw: false,
+                    transition: {
+                      duration: 400,
+                      easing: 'cubic-in-out'
+                    },
+                    frame: {
+                      duration: 400
+                    }
+                  })
+                console.log('type:',config, config.data[0].type)
+            }else{
+                  Plotly.animate(div, config, {
+                    transition: {
+                      duration: 400,
+                      easing: 'cubic-in-out'
+                    },
+                    frame: {
+                      duration: 400
+                    }
+                  })
+            }
         }
     }
     async setPlotlyEvent(){
@@ -148,20 +166,23 @@ export class SdHrDashboard extends Component {
         let self = this;
         const chartBoxDivs = document.querySelectorAll('.chart_box_div')
         for ( const div of chartBoxDivs){
-            div.on('plotly_click', function(data){
-                var pn='',
-                  tn='',
-                  label='',
-                  colors=[];
-                for(var i=0; i < data.points.length; i++){
+            this.setOnClickPlot(self, div,)
+        }
+    }
+    setOnClickPlot(self, div,){
+        div.on('plotly_click', function(data){
+            var pn='',
+              tn='',
+              label='',
+              colors=[];
+            for(var i=0; i < data.points.length; i++){
                 pn = data.points[i].pointNumber;
                 tn = data.points[i].curveNumber;
                 label = data.points[i].label;
                 };
                 self.onTextClick(div.attributes.chartName.value, true, pn, tn, label)
-                console.log('clicked:', data )
-            });
-        }
+//                console.log('clicked:', data )
+        });
     }
 }
 

@@ -74,10 +74,14 @@ class SdHrDashboardEmployee(models.Model):
         age_count = list([age_count[rec] for rec in age_decade])
         age_count_max = max(age_count)
         trace1_y = {
-            'x': age_decade,
-            'y': age_count,
-            'text': [rec if rec > age_count_max * .15  else '' for rec in age_count],
+            'y': age_decade,
+            'x': age_count,
+            'text': age_count,
+            'text': [rec if rec > 0  else '' for rec in age_count],
             'type': "bar",
+            'orientation': "h",
+            'textangle': 0,
+            'textposition': "outside",
             'textfont': {
                 'size': 18,
             }
@@ -88,15 +92,16 @@ class SdHrDashboardEmployee(models.Model):
                 'autosize': True,
                 'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
                 'xaxis': {
-                    'type': 'category',
-                    'dtick': 1,
-                    'tickangle': 0,
+                    # 'type': 'category',
+                    # 'dtick': 1,
+                    # 'tickangle': 0,
                     'tickfont': {
                         'size': 15
                     },
+                    'showticklabels': False,
                 },
                 'yaxis': {
-                    'showticklabels': False,
+                    'showticklabels': True,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -122,6 +127,7 @@ class SdHrDashboardEmployee(models.Model):
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
+                'showlegend': False,
                 'margin': {'l': 40, 'r': 20, 'b': 80, 't': 60, 'pad': 4},
                 'xaxis': {
                     'type': 'category',
@@ -144,29 +150,57 @@ class SdHrDashboardEmployee(models.Model):
         department_count = list([department_count[rec] for rec in department_ids])
         max_y = max(department_count)
         trace1_y = {
-            'x': department_names,
-            'y': department_count,
+            'x': department_count,
+            'y': department_names,
             'text': [rec if rec > max_y * .15 else '' for rec in department_count],
             'type': "bar",
+            'orientation': 'h',
+            'textangle': 0,
             'textfont': {
-                'size': 18,
-            }
+                'size': 20,
+            },
+            'textposition': "outside",
+        }
+
+        values = ["11", "12", "13", "14", "15", "20", "30"]
+        labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"]
+        # parents = ["", "A1", "A2", "A3", "A4", "", "B1"]
+        values =  department_count,
+        labels = department_names,
+        parents = list(["" for _ in range(len(department_count))])
+        # parents = [" " * len(department_count)]
+        # ic(len(department_count), values, labels, parents, )
+
+        trace2_y = {
+            'type': 'treemap',
+            'values': department_count,
+            'labels': department_names,
+            'parents': parents,
+            'marker': {'colorscale': 'Blues', 'cauto': True,},
+            # 'textinfo': "label+value+percent parent+percent entry",
+            'textinfo': "label+value",
+            'textposition': "middle center",
+            # 'domain': {"x": [0, 0.48]},
+            # 'outsidetextfont': {"size": 20, "color": "#377eb8"},
+            # 'marker': {"line": {"width": 2}},
+            'pathbar': {"visible": False}
         }
         departments = {
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
-                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
+
+                'margin': {'l': 150, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
-                    'type': 'category',
-                    'dtick': 1,
-                    'tickangle': 30,
+                    # 'type': 'category',
+                    # 'dtick': 1,
+                    # 'tickangle': 0,
                     'tickfont': {
                         'size': 15
                     },
                 },
                 'yaxis': {
-                    'showticklabels': False if max_y < 6 else True ,
+                    # 'showticklabels': False if max_y < 6 else True ,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -178,7 +212,7 @@ class SdHrDashboardEmployee(models.Model):
         project_count = Counter(employees_project_list)
         project_count = list([project_count[rec] for rec in project_ids])
         project_count = list([rec for rec in project_count])
-        trace1_y = {
+        trace12_y = {
             'x': project_names,
             'y': project_count,
             'type': "bar",
@@ -188,11 +222,34 @@ class SdHrDashboardEmployee(models.Model):
                 'size': 18,
             }
         }
+        trace1_y = {
+            'labels': certificate_names_translate,
+            'values': certificate_count,
+            'text': certificate_names_translate,
+
+            'type': "pie",
+            'hole': .4,
+            'textfont': {
+                'size': 16,
+            },
+        }
+        trace1_y = {
+            'labels': project_names,
+            'values': project_count,
+            'text': project_names,
+            'type': "pie",
+            # 'text': [rec if rec > max(project_count) * .15 else '' for rec in project_count],
+            'hole': .4,
+
+            'textfont': {
+                'size': 18,
+            }
+        }
         projects = {
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
-                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
+                'margin': {'l': 10, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
                     'type': 'category',
                     'dtick': 1,
@@ -237,34 +294,69 @@ class SdHrDashboardEmployee(models.Model):
         project_count = Counter(employees_project_list)
         project_count = list([project_count[rec] for rec in project_ids])
         data_of_cost = []
+        data_of_cost_sum = []
         for p_name, p_const in project_cost_dict.items():
             data_of_cost.append( {
-                'x': months_list,
-                'y': p_const,
+                'x': p_const,
+                'y': months_list,
                 'text': p_const,
                 'type': "bar",
+                'orientation': "h",
+                'textangle': 0,
+                'textposition': "inside",
                 'name': p_name,
                 'textfont': {
                     'size': 16,
                     },
                 })
+        for trace in data_of_cost:
+            # ic(trace.get('x', []))
+            if data_of_cost_sum:
+                new_list = list(zip(data_of_cost_sum, trace.get('x', 0)))
+                # ic(new_list)
+                data_of_cost_sum = list([a + b for (a, b) in new_list])
+            else:
+                data_of_cost_sum = trace.get('x', [])
+        # ic(data_of_cost_sum)
+        data_of_cost.append( {
+                'x': data_of_cost_sum,
+                'y': months_list,
+                'text': list([f"  {rec}" for rec in data_of_cost_sum ]),
+                'type': 'scatter',
+                'mode': 'lines+text',
+                'textposition': 'top right',
+                'textfont':{
+                    'size': 18,
+                },
+                'line': {
+                    'color': 'rgba(0,0,0,0)',
+                },
+                # 'yaxis': 'y2'
+                })
+
 
         projects_hr_cost = {
             'data': data_of_cost,
             'layout': {
                 'autosize': True,
                 'barmode': 'stack',
-                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
+                'margin': {'l': 100, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
-                    'type': 'category',
-                    'dtick': 1,
-                    'tickangle': 30,
+                    # 'type': 'category',
+                    # 'dtick': 1,
+                    # 'tickangle': 30,
                     'tickfont': {
                         'size': 15
                     },
                 },
                 'yaxis': {
                 },
+                'yaxis2': {
+                    # 'title': 'Line Axis',
+                    # 'overlaying': 'y',
+                    # 'side': 'right',
+                    # 'position': 1,
+                    },
             },
             'config': {'responsive': True, 'displayModeBar': False}
         }
