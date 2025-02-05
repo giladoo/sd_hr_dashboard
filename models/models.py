@@ -259,7 +259,7 @@ class SdHrDashboardEmployee(models.Model):
                     },
                 },
                 'yaxis': {
-                    'showticklabels': False if max(project_count) < 6 else True,
+                    'showticklabels': False if project_count and max(project_count) < 6 else True,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
