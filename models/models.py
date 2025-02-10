@@ -1,5 +1,5 @@
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 import json
 from jdatetimext import j_start, j_date_period
 from datetime import date
@@ -13,8 +13,8 @@ class SdHrDashboardEmployee(models.Model):
     def get_employees(self, domain_list=[{'total': ['', 0, 0]}]):
         if not self.env.user.has_group('hr.group_hr_user'):
             return {}
-        ic(domain_list, )
-        ic(list([r for r in domain_list if dict(r).get('total', False)]))
+        # ic(domain_list, )
+        # ic(list([r for r in domain_list if dict(r).get('total', False)]))
         lang = self.env.context.get('lang', 'en_US')
         emp_domain = []
         project_domain = []
@@ -41,7 +41,7 @@ class SdHrDashboardEmployee(models.Model):
             cont_domain += emp_project_domain
 
         department_clicked = list([r for r in domain_list if dict(r).get('departments', False)])
-        ic(department_clicked)
+        # ic(department_clicked)
         if len(department_clicked) > 0:
             department_domain = [('name', '=', dict(department_clicked[0]).get('departments')[0])]
             department_id = self.env['hr.department'].sudo().search(department_domain,)
@@ -52,7 +52,7 @@ class SdHrDashboardEmployee(models.Model):
             certificates_clicked_name = dict(certificates_clicked[0]).get('certificates')[0]
             cert = self._fields['certificate']._description_selection(self.env)
             cert = list([rec[0] for rec in cert if rec[1] == certificates_clicked_name])[0]
-            ic(cert)
+            # ic(cert)
             emp_domain += [('certificate', '=', cert)]
 
         employees_data = self.sudo().search_read(emp_domain, ['birthday', 'certificate', 'department_id', 'project_name'])
@@ -72,7 +72,7 @@ class SdHrDashboardEmployee(models.Model):
         age_count = Counter(age_list)
         age_decade = [10, 20, 30, 40, 50, 60, 70, 80, 90]
         age_count = list([age_count[rec] for rec in age_decade])
-        age_count_max = max(age_count)
+        max_x = max(age_count)
         trace1_y = {
             'y': age_decade,
             'x': age_count,
@@ -81,27 +81,31 @@ class SdHrDashboardEmployee(models.Model):
             'type': "bar",
             'orientation': "h",
             'textangle': 0,
+            # 'textposition': ["inside" if rec > 5 else "outside"  for rec in age_count],
             'textposition': "outside",
-            'textfont': {
-                'size': 18,
-            }
+            'cliponaxis': False,
+            'constraintext': "outside",
+            'insidetextfont': {'size': 18, },
+            'outsidetextfont': {'size': 18, },
         }
+
         ages = {
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
-                'margin': {'l': 40, 'r': 20, 'b': 80, 't': 10, 'pad': 4},
+                # 'paper_bgcolor': 'rgb(255,255,0,.5)',
+                # 'plot_bgcolor ': 'rgb(255,0,0,.5)',
+                'margin': {'l': 20, 'r': 10, 'b': 80, 't': 10, 'pad': 5},
                 'xaxis': {
-                    # 'type': 'category',
-                    # 'dtick': 1,
-                    # 'tickangle': 0,
-                    'tickfont': {
-                        'size': 15
-                    },
+                'layer': "below traces",
+                    'tickfont': {'size': 15 },
+                    # 'range': [0, max_x * 1.1],
                     'showticklabels': False,
+                    # 'automargin': True,
                 },
                 'yaxis': {
                     'showticklabels': True,
+
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -116,12 +120,9 @@ class SdHrDashboardEmployee(models.Model):
             'labels': certificate_names_translate,
             'values': certificate_count,
             'text': certificate_names_translate,
-
             'type': "pie",
             'hole': .4,
-            'textfont': {
-                'size': 16,
-            },
+            'textfont': { 'size': 16, },
         }
         certificates = {
             'data': [trace1_y],
@@ -148,59 +149,42 @@ class SdHrDashboardEmployee(models.Model):
         employees_department_list = list([rec['department_id'][0] for rec in employees_data if rec['department_id']])
         department_count = Counter(employees_department_list)
         department_count = list([department_count[rec] for rec in department_ids])
-        max_y = max(department_count)
+        max_x = max(department_count)
         trace1_y = {
             'x': department_count,
             'y': department_names,
-            'text': [rec if rec > max_y * .15 else '' for rec in department_count],
+            'text': [f" {rec}" if rec > 0 else '' for rec in department_count],
             'type': "bar",
             'orientation': 'h',
             'textangle': 0,
-            'textfont': {
-                'size': 20,
-            },
-            'textposition': "outside",
+            # 'textposition': ["inside" if rec > 5 else "outside"  for rec in department_count],
+            'textposition': 'outside',
+            'cliponaxis': False,
+            'insidetextfont': {'size': 18, },
+            'outsidetextfont': {'size': 18, },
         }
-
-        values = ["11", "12", "13", "14", "15", "20", "30"]
-        labels = ["A1", "A2", "A3", "A4", "A5", "B1", "B2"]
-        # parents = ["", "A1", "A2", "A3", "A4", "", "B1"]
-        values =  department_count,
-        labels = department_names,
         parents = list(["" for _ in range(len(department_count))])
-        # parents = [" " * len(department_count)]
-        # ic(len(department_count), values, labels, parents, )
-
         trace2_y = {
             'type': 'treemap',
             'values': department_count,
             'labels': department_names,
             'parents': parents,
             'marker': {'colorscale': 'Blues', 'cauto': True,},
-            # 'textinfo': "label+value+percent parent+percent entry",
             'textinfo': "label+value",
             'textposition': "middle center",
-            # 'domain': {"x": [0, 0.48]},
-            # 'outsidetextfont': {"size": 20, "color": "#377eb8"},
-            # 'marker': {"line": {"width": 2}},
             'pathbar': {"visible": False}
         }
         departments = {
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
-
+                'paper_bgcolor': 'rgb(255,255,255,0)',
                 'margin': {'l': 150, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
-                    # 'type': 'category',
-                    # 'dtick': 1,
-                    # 'tickangle': 0,
-                    'tickfont': {
-                        'size': 15
-                    },
+                    'tickfont': { 'size': 15},
+                    # 'range': [0, max_x * 1.1],
                 },
                 'yaxis': {
-                    # 'showticklabels': False if max_y < 6 else True ,
                 }, },
             'config': {'responsive': True, 'displayModeBar': False}
         }
@@ -217,21 +201,15 @@ class SdHrDashboardEmployee(models.Model):
             'y': project_count,
             'type': "bar",
             'text': [rec if rec > max(project_count) * .15 else '' for rec in project_count],
-
-            'textfont': {
-                'size': 18,
-            }
+            'textfont': { 'size': 18, }
         }
         trace1_y = {
             'labels': certificate_names_translate,
             'values': certificate_count,
             'text': certificate_names_translate,
-
             'type': "pie",
             'hole': .4,
-            'textfont': {
-                'size': 16,
-            },
+            'textfont': {'size': 16, },
         }
         trace1_y = {
             'labels': project_names,
@@ -240,23 +218,19 @@ class SdHrDashboardEmployee(models.Model):
             'type': "pie",
             # 'text': [rec if rec > max(project_count) * .15 else '' for rec in project_count],
             'hole': .4,
-
-            'textfont': {
-                'size': 18,
-            }
+            'textfont': {'size': 18, }
         }
         projects = {
             'data': [trace1_y],
             'layout': {
                 'autosize': True,
+                'showlegend': False,
                 'margin': {'l': 10, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
                     'type': 'category',
                     'dtick': 1,
                     'tickangle': 30,
-                    'tickfont': {
-                        'size': 15
-                    },
+                    'tickfont': {'size': 15 },
                 },
                 'yaxis': {
                     'showticklabels': False if max(project_count) < 6 else True,
@@ -305,58 +279,43 @@ class SdHrDashboardEmployee(models.Model):
                 'textangle': 0,
                 'textposition': "inside",
                 'name': p_name,
-                'textfont': {
-                    'size': 16,
-                    },
+                'textfont': {'size': 16, },
                 })
         for trace in data_of_cost:
-            # ic(trace.get('x', []))
             if data_of_cost_sum:
                 new_list = list(zip(data_of_cost_sum, trace.get('x', 0)))
-                # ic(new_list)
                 data_of_cost_sum = list([a + b for (a, b) in new_list])
             else:
                 data_of_cost_sum = trace.get('x', [])
-        # ic(data_of_cost_sum)
         data_of_cost.append( {
                 'x': data_of_cost_sum,
                 'y': months_list,
                 'text': list([f"  {rec}" for rec in data_of_cost_sum ]),
                 'type': 'scatter',
+                'name': _('Total'),
                 'mode': 'lines+text',
                 'textposition': 'top right',
-                'textfont':{
-                    'size': 18,
-                },
-                'line': {
-                    'color': 'rgba(0,0,0,0)',
-                },
-                # 'yaxis': 'y2'
+                'textfont':{'size': 18,},
+                'cliponaxis': False,
+                'line': {'color': 'rgba(0,0,0,0)', },
                 })
-
-
+        max_x = max(data_of_cost_sum)
         projects_hr_cost = {
             'data': data_of_cost,
             'layout': {
                 'autosize': True,
+                # 'cliponaxis': False,
+                # 'showlegend': False,
                 'barmode': 'stack',
-                'margin': {'l': 100, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
+                'automargin': True,
+                # 'margin': {'l': 100, 'r': 10, 'b': 10, 't': 10, 'pad': 4},
                 'xaxis': {
-                    # 'type': 'category',
-                    # 'dtick': 1,
-                    # 'tickangle': 30,
-                    'tickfont': {
-                        'size': 15
-                    },
+                    'tickfont': {'size': 15},
+                    # 'range': [0, max_x * 1.1],
+
                 },
                 'yaxis': {
                 },
-                'yaxis2': {
-                    # 'title': 'Line Axis',
-                    # 'overlaying': 'y',
-                    # 'side': 'right',
-                    # 'position': 1,
-                    },
             },
             'config': {'responsive': True, 'displayModeBar': False}
         }
