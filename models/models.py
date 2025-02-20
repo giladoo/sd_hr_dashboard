@@ -111,6 +111,7 @@ class SdHrDashboardEmployee(models.Model):
         certificate_names_translate = list(dict(self._fields['certificate']._description_selection(self.env)).values())
         certificate_names = self._fields['certificate'].get_values(self.env)
         certificate_count = Counter(certificate_list)
+        ic(certificate_names, certificate_count)
         certificate_count = list([certificate_count[rec] for rec in certificate_names])
         trace1_y = {
             'labels': certificate_names_translate,
@@ -152,7 +153,8 @@ class SdHrDashboardEmployee(models.Model):
         trace1_y = {
             'x': department_count,
             'y': department_names,
-            'text': [rec if rec > max_y * .15 else '' for rec in department_count],
+            'text': [rec for rec in department_count],
+            # 'text': [rec if rec > max_y * .15 else '' for rec in department_count],
             'type': "bar",
             'orientation': 'h',
             'textangle': 0,
